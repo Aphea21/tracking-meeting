@@ -11,7 +11,7 @@ class Agenda extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'agendas';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'agenda_id';
 
     protected $fillable = [
         'title',
@@ -37,4 +37,10 @@ class Agenda extends Model
     {
         return $this->hasMany(Attachment::class, 'agenda_id');
     }
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'created_by');
+}
+
 }

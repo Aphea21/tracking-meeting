@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
-
+use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\ConcernController;
 /*
 |--------------------------------------------------------------------------
 | Agenda Module Routes
@@ -16,48 +17,33 @@ use App\Http\Controllers\AgentController;
 | - Viewer: can only view agendas
 |--------------------------------------------------------------------------
 */
+
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Shared dashboard
+Route::get('/dashboard', fn() => view('dashboard'))
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
+// Profile routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-// -------------------- ADMIN / SECRETARIAT ROUTES --------------------
 
-Route::middleware(['auth', 'role:admin'])->group(function(){
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-     Route::get('/agendas', [AgendaController::class, 'index'])->name('agendas.index');
-    Route::get('/agendas/create', [AgendaController::class, 'create'])->name('agendas.create');
-    Route::post('/agendas', [AgendaController::class, 'store'])->name('agendas.store');
-    Route::get('/agendas/{agenda}/edit', [AgendaController::class, 'edit'])->name('agendas.edit');
-    Route::put('/agendas/{agenda}', [AgendaController::class, 'update'])->name('agendas.update');
-    Route::delete('/agendas/{agenda}', [AgendaController::class, 'destroy'])->name('agendas.destroy');
-
-    // Manage Concerns under each Agenda
-    Route::post('/agendas/{agenda}/concerns', [ConcernController::class, 'store'])->name('concerns.store');
-    Route::put('/concerns/{concern}', [ConcernController::class, 'update'])->name('concerns.update');
-    Route::delete('/concerns/{concern}', [ConcernController::class, 'destroy'])->name('concerns.destroy');
-});
-
-Route::middleware(['auth', 'role:member'])->group(function(){
-    // View all agendas and specific details
-    Route::get('/agendas', [AgendaController::class, 'index'])->name('agendas.index');
-    Route::get('/agendas/{agenda}', [AgendaController::class, 'show'])->name('agendas.show');
-
-    // Members can comment or raise concerns
+// One shared agendas resource for all roles
+Route::middleware(['auth'])->group(function () {
+    Route::resource('agendas', AgendaController::class);
     Route::post('/agendas/{agenda}/concerns', [ConcernController::class, 'store'])->name('concerns.store');
 });
-Route::middleware(['auth', 'role:user'])->group(function () {
 
-    // Read-only access
-    Route::get('/agendas', [AgendaController::class, 'index'])->name('agendas.index');
-    Route::get('/agendas/{agenda}', [AgendaController::class, 'show'])->name('agendas.show');
-});
+// Admin dashboard
+Route::middleware(['auth', 'role:admin'])->get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
 require __DIR__.'/auth.php';

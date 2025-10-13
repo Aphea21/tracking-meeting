@@ -38,7 +38,7 @@ git init
 
 # Step 3: Add a new remote repository (Replace with your GitHub repo URL)
 git remote add origin https://github.com/Aphea21/transport.git
-
+git remote add origin https://github.com/Aphea21/tracking-meeting.git
 # Step 4: Stage all files for commit
 git add .  
 
