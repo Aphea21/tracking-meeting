@@ -11,7 +11,7 @@ class Concern extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'concerns';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'concern_id';
 
     protected $fillable = [
         'agenda_id',
@@ -43,4 +43,9 @@ class Concern extends Model
     {
         return $this->hasMany(Comment::class, 'concern_id');
     }
+    public function concerns()
+{
+    return $this->hasMany(Concern::class, 'agenda_id');
+}
+
 }

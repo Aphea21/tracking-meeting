@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->text('notes')->nullable();
             $table->string('file_path')->nullable(); // for uploads
+            $table->string('status')->default('Pending');
             $table->timestamps();
             $table->softDeletes(); 
         });

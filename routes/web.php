@@ -37,8 +37,12 @@ Route::middleware('auth')->group(function () {
 
 // One shared agendas resource for all roles
 Route::middleware(['auth'])->group(function () {
-    Route::resource('agendas', AgendaController::class);
-    Route::post('/agendas/{agenda}/concerns', [ConcernController::class, 'store'])->name('concerns.store');
+Route::resource('agendas', AgendaController::class);
+
+
+Route::post('/agendas/{agenda}/concerns', [ConcernController::class, 'store'])->name('concerns.store');
+Route::put('/concerns/{concern}', [ConcernController::class, 'update'])->name('concerns.update');
+Route::delete('/concerns/{concern}', [ConcernController::class, 'destroy'])->name('concerns.destroy');
 });
 
 // Admin dashboard

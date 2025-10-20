@@ -2,34 +2,63 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Concern;
 use App\Models\Agenda;
-use Illuminate\Http\Request;
 
 class ConcernController extends Controller
 {
-    public function store(Request $request, Agenda $agenda)
+    // Store new concern
+    public function store(Request $request, $agenda_id)
     {
         $request->validate([
             'description' => 'required|string',
-            'responsible_person' => 'nullable|string',
-            'status' => 'nullable|string',
+            'responsible_person' => 'nullable|string|max:255',
+            'status' => 'required|string',
             'due_date' => 'nullable|date',
             'comments' => 'nullable|string',
-            'file_path' => 'nullable|file|mimes:pdf,docx,jpg,png|max:2048',
+            'file_path' => 'nullable|file|max:2048',
         ]);
 
-        $concern = new Concern($request->except('file_path'));
-
+        $filePath = null;
         if ($request->hasFile('file_path')) {
-            $concern->file_path = $request->file('file_path')->store('concerns');
+            $filePath = $request->file('file_path')->store('uploads/concerns', 'public');
         }
 
-        $concern->agenda_id = $agenda->id;
-        $concern->save();
+        Concern::create([
+            'agenda_id' => $agenda_id,
+            'description' => $request->description,
+            'responsible_person' => $request->responsible_person,
+            'status' => $request->status,
+            'due_date' => $request->due_date,
+            'comments' => $request->comments,
+            'file_path' => $filePath,
+        ]);
 
         return redirect()->back()->with('success', 'Concern added successfully.');
     }
+
+    // Update concern
+    public function update(Request $request, Concern $concern)
+    {
+        $request->validate([
+            'description' => 'required|string',
+            'status' => 'required|string',
+        ]);
+
+        $concern->update($request->all());
+
+        return redirect()->back()->with('success', 'Concern updated successfully.');
+    }
+
+    // Delete concern
+    public function destroy(Concern $concern)
+    {
+        $concern->delete();
+        return redirect()->back()->with('success', 'Concern deleted.');
+    }
+
+
 
 
     /**
@@ -64,16 +93,5 @@ class ConcernController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+ 
 }

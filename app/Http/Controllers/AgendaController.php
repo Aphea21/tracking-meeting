@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Agenda;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 class AgendaController extends Controller
 {
     public function index()
@@ -42,15 +43,36 @@ class AgendaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+  public function store(Request $request)
     {
-        //
+        // Validate form data
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'notes' => 'nullable|string',
+            'file_path' => 'nullable|file|max:2048',
+        ]);
+
+        // Handle file upload (optional)
+        $filePath = null;
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
+            $filePath = $file->store('uploads/agendas', 'public');
+        }
+
+        // Create new agenda
+        Agenda::create([
+            'title' => $request->title,
+            // 👇 Automatically insert today's date (even if user didn’t input)
+            'date' => now()->toDateString(),
+            'created_by' => Auth::id(), // or manually set an ID if not using auth
+            'notes' => $request->notes,
+            'file_path' => $filePath,
+            'status' => 'Pending', // Default value, you can change it
+        ]);
+
+        return redirect()->back()->with('success', 'Agenda saved successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-  
 
     /**
      * Show the form for editing the specified resource.
