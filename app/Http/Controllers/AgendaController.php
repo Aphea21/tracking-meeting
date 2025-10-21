@@ -19,7 +19,8 @@ class AgendaController extends Controller
         } else {
             $agendas = Agenda::where('status', 'published')->get(); // normal users see limited
         }
-    
+        $agendas = Agenda::where('status', 'active')->orderBy('date', 'desc')->get();
+
         return view('agendas.index', compact('agendas'));
     }
     
@@ -77,24 +78,81 @@ class AgendaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
-    }
+public function edit($id)
+{
+    $agenda = Agenda::findOrFail($id);
+    return view('agendas.edit', compact('agenda'));
+}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+public function update(Request $request, $id)
+{
+    $agenda = Agenda::findOrFail($id);
+
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'notes' => 'nullable|string',
+        'file_path' => 'nullable|file|max:2048',
+    ]);
+
+    // Handle file replacement
+    if ($request->hasFile('file_path')) {
+        // Delete old file if exists
+        if ($agenda->file_path) {
+            Storage::disk('public')->delete($agenda->file_path);
+        }
+        // Store new file
+        $agenda->file_path = $request->file('file_path')->store('agendas', 'public');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    // Update other fields
+    $agenda->update([
+        'title' => $request->title,
+        'notes' => $request->notes,
+    ]);
+
+    return redirect()
+        ->route('agendas.show', $agenda->agenda_id)
+        ->with('success', 'Agenda updated successfully!');
+}
+
+
+
+// 🗑️ DESTROY (ARCHIVE) AGENDA
+public function destroy($id)
+{
+    $agenda = Agenda::findOrFail($id);
+
+    // Instead of deleting, mark as archived
+    $agenda->update(['status' => 'archived']);
+
+    return redirect()
+        ->route('agendas.index')
+        ->with('success', 'Agenda archived successfully!');
+}
+
+
+// 📦 SHOW ARCHIVED AGENDAS
+public function archived()
+{
+    $agendas = Agenda::where('status', 'archived')
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+    return view('agendas.archived', compact('agendas'));
+}
+
+// ♻️ RESTORE ARCHIVED AGENDA (optional)
+public function restore($id)
+{
+    $agenda = Agenda::findOrFail($id);
+    $agenda->update(['status' => 'active']);
+
+    return redirect()
+        ->route('agendas.archived')
+        ->with('success', 'Agenda restored successfully!');
+}
+
 }

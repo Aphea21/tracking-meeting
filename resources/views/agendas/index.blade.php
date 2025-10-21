@@ -20,11 +20,16 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <h1 class="text-2xl font-semibold text-gray-900">Agendas</h1>
-            <a href="{{ route('agendas.create') }}" 
+                          <a href="{{ route('agendas.archived') }}" class="inline-block mt-3 sm:mt-0 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition"">
+    📦 View Archived Agendas
+</a>     
+<a href="{{ route('agendas.create') }}" 
                class="inline-block mt-3 sm:mt-0 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition">
                 + New Agenda
             </a>
+     
         </div>
+
 
         <!-- Table Container -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

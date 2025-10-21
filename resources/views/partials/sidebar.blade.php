@@ -25,24 +25,55 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 px-2 overflow-y-auto space-y-2">
-        <!-- Dashboard -->
-        <a href="{{ route('admin.dashboard') }}"
-            class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-gray-800 hover:bg-gray-700">
-            🏠 <span class="ml-3">Dashboard</span>
-        </a>
+<nav class="flex-1 px-3 py-4 overflow-y-auto space-y-4 bg-gray-900 text-gray-200">
+    <!-- DASHBOARD -->
+    <a href="{{ route('admin.dashboard') }}"
+       class="flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gray-800 hover:bg-gray-700 transition">
+        🏠 <span class="ml-3">Dashboard</span>
+    </a>
 
-        <!-- Branch Management -->
-        <div>
-            <p class="px-4 py-2 text-xs uppercase text-gray-400">Branch Management</p>
-            <div class="pl-6 space-y-1">
-                <a href="{{ route('agendas.index') }}" class="block py-2 text-sm hover:text-indigo-400">Branch List</a>
-                <a href="#" class="block py-2 text-sm hover:text-indigo-400">Assign Staff / Drivers</a>
-            </div>
+    <!-- MEETING MANAGEMENT -->
+    <div>
+        <p class="px-4 py-2 text-xs uppercase tracking-wider text-gray-400">Meeting Management</p>
+        <div class="pl-6 space-y-1">
+            <a href="{{ route('agendas.index') }}" class="block py-2 text-sm hover:text-amber-400">🗓️ Agendas</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">🧾 Concerns / Issues</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">💬 Comments & Discussions</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">📎 Attachments</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">📦 Archived Agendas</a>
         </div>
+    </div>
 
-  
-    </nav>
+    <!-- REPORTS -->
+    <div>
+        <p class="px-4 py-2 text-xs uppercase tracking-wider text-gray-400">Reports & Tracking</p>
+        <div class="pl-6 space-y-1">
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">📊 Meeting Reports</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">📅 Timeline / Calendar View</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">🕓 Activity Logs</a>
+        </div>
+    </div>
+
+    <!-- USER MANAGEMENT -->
+    <div>
+        <p class="px-4 py-2 text-xs uppercase tracking-wider text-gray-400">User & Access</p>
+        <div class="pl-6 space-y-1">
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">👥 Participants</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">🧑‍💼 Admins & Staff</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">⚙️ Roles & Permissions</a>
+        </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div>
+        <p class="px-4 py-2 text-xs uppercase tracking-wider text-gray-400">System</p>
+        <div class="pl-6 space-y-1">
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">🔧 Settings</a>
+            <a href="#" class="block py-2 text-sm hover:text-amber-400">📤 Backups</a>
+        </div>
+    </div>
+</nav>
+
 
     <!-- User Profile -->
     <div class="p-4 border-t border-gray-800 flex-shrink-0">

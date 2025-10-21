@@ -2,31 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Concern;
 use App\Models\Agenda;
+use Illuminate\Http\Request;
 
 class ConcernController extends Controller
 {
-    // Store new concern
-    public function store(Request $request, $agenda_id)
+    public function index($agenda_id)
+    {
+        $agenda = Agenda::findOrFail($agenda_id);
+        $concerns = Concern::where('agenda_id', $agenda_id)->get();
+        return view('concerns.index', compact('agenda', 'concerns'));
+    }
+
+    public function create($agenda_id)
+    {
+        $agenda = Agenda::findOrFail($agenda_id);
+        return view('concerns.create', compact('agenda'));
+    }
+
+    public function store(Request $request)
     {
         $request->validate([
+            'agenda_id' => 'required',
             'description' => 'required|string',
-            'responsible_person' => 'nullable|string|max:255',
+            'responsible_person' => 'required|string',
             'status' => 'required|string',
             'due_date' => 'nullable|date',
             'comments' => 'nullable|string',
-            'file_path' => 'nullable|file|max:2048',
+            'file' => 'nullable|file|max:2048',
         ]);
 
         $filePath = null;
-        if ($request->hasFile('file_path')) {
-            $filePath = $request->file('file_path')->store('uploads/concerns', 'public');
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('concerns', 'public');
         }
 
         Concern::create([
-            'agenda_id' => $agenda_id,
+            'agenda_id' => $request->agenda_id,
             'description' => $request->description,
             'responsible_person' => $request->responsible_person,
             'status' => $request->status,
@@ -35,63 +48,43 @@ class ConcernController extends Controller
             'file_path' => $filePath,
         ]);
 
-        return redirect()->back()->with('success', 'Concern added successfully.');
+        return redirect()->route('concerns.index', $request->agenda_id)->with('success', 'Concern added successfully.');
     }
 
-    // Update concern
-    public function update(Request $request, Concern $concern)
+    public function edit($id)
     {
+        $concern = Concern::findOrFail($id);
+        return view('concerns.edit', compact('concern'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $concern = Concern::findOrFail($id);
+
         $request->validate([
             'description' => 'required|string',
+            'responsible_person' => 'required|string',
             'status' => 'required|string',
+            'due_date' => 'nullable|date',
+            'comments' => 'nullable|string',
         ]);
 
-        $concern->update($request->all());
+        $concern->update($request->only([
+            'description',
+            'responsible_person',
+            'status',
+            'due_date',
+            'comments'
+        ]));
 
-        return redirect()->back()->with('success', 'Concern updated successfully.');
+        return redirect()->route('concerns.index', $concern->agenda_id)->with('success', 'Concern updated successfully.');
     }
 
-    // Delete concern
-    public function destroy(Concern $concern)
+    public function destroy($id)
     {
+        $concern = Concern::findOrFail($id);
         $concern->delete();
-        return redirect()->back()->with('success', 'Concern deleted.');
+
+        return back()->with('success', 'Concern deleted successfully.');
     }
-
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-  
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
- 
 }

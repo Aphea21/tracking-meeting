@@ -37,12 +37,20 @@ Route::middleware('auth')->group(function () {
 
 // One shared agendas resource for all roles
 Route::middleware(['auth'])->group(function () {
+Route::get('/agendas/archived', [AgendaController::class, 'archived'])->name('agendas.archived');
+Route::put('/agendas/{id}/restore', [AgendaController::class, 'restore'])->name('agendas.restore');
 Route::resource('agendas', AgendaController::class);
 
 
-Route::post('/agendas/{agenda}/concerns', [ConcernController::class, 'store'])->name('concerns.store');
-Route::put('/concerns/{concern}', [ConcernController::class, 'update'])->name('concerns.update');
-Route::delete('/concerns/{concern}', [ConcernController::class, 'destroy'])->name('concerns.destroy');
+Route::prefix('concerns')->group(function () {
+    Route::get('/{agenda_id}', [ConcernController::class, 'index'])->name('concerns.index');
+    Route::get('/{agenda_id}/create', [ConcernController::class, 'create'])->name('concerns.create');
+    Route::post('/', [ConcernController::class, 'store'])->name('concerns.store');
+    Route::get('/edit/{id}', [ConcernController::class, 'edit'])->name('concerns.edit');
+    Route::put('/{id}', [ConcernController::class, 'update'])->name('concerns.update');
+    Route::delete('/{id}', [ConcernController::class, 'destroy'])->name('concerns.destroy');
+});
+
 });
 
 // Admin dashboard
